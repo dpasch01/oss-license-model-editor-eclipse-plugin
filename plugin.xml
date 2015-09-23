@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
+            default="true"
+            extensions="ttl"
+            id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
+            name="OSS License Model Multi Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+   </extension>
+
+</plugin>
