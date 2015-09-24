@@ -20,5 +20,18 @@
    <extension
          point="org.eclipse.ui.menus">
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelCategory"
+            name="License Model Category">
+      </category>
+      <wizard
+            category="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelCategory"
+            class="cs.ucy.ac.cy.osslicense.model.editor.wizard.LicenseModelWizard"
+            id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelWizard"
+            name="License Model Wizard">
+      </wizard>
+   </extension>
 
 </plugin>

@@ -47,4 +47,5 @@ Bundle-ClassPath: libs/appframework-1.0.3.jar,
  libs/jena/slf4j-api-1.7.12.jar,
  libs/jena/slf4j-log4j12-1.7.12.jar,
  libs/jena/xercesImpl-2.11.0.jar,
- libs/jena/xml-apis-1.4.01.jar
+ libs/jena/xml-apis-1.4.01.jar,
+ swing2swt.jar
