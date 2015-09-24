@@ -1,11 +1,16 @@
 package cs.ucy.ac.cy.osslicense.model.editor.wizard;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.INewWizard;
+import org.eclipse.ui.IWorkbench;
 
-public class LicenseModelWizard extends Wizard {
+public class LicenseModelWizard extends Wizard implements INewWizard {
 
 	LicenseModelWizardPage wizardPage;
-
+	ISelection selection;
+	
 	public LicenseModelWizard() {
 		super();
 		setNeedsProgressMonitor(true);
@@ -24,8 +29,12 @@ public class LicenseModelWizard extends Wizard {
 
 	@Override
 	public boolean performFinish() {
-		System.out.println(wizardPage.getText1());
 		return true;
+	}
+
+	@Override
+	public void init(IWorkbench workbench, IStructuredSelection selection) {
+		this.selection = selection;
 	}
 
 }
