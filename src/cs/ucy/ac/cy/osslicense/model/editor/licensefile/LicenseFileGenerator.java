@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 public class LicenseFileGenerator {
-	public static final String FILE_EXTENSION = "olm";
+	public static final String FILE_EXTENSION = "ttl";
 	public static final String OWL = "@prefix owl:<http://www.w3.org/2002/07/owl#> .";
 	public static final String RDF = "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .";
 	public static final String OL = "@prefix ol: <http://www.cs.ucy.ac.cy/~dpasch01/license-modeling/ontologies/oss-license.owl#> .";
@@ -36,7 +36,7 @@ public class LicenseFileGenerator {
 
 		writer.println("ol:hasRight ");
 		for (int i = 0; i < rights.length; i++) {
-			writer.print(rights[i]);
+			writer.print("ol:"+rights[i]);
 			if (i != (rights.length - 1)) {
 				writer.println(" ,");
 			} else {
@@ -46,7 +46,7 @@ public class LicenseFileGenerator {
 
 		writer.println("ol:hasObligation ");
 		for (int i = 0; i < obligations.length; i++) {
-			writer.print(obligations[i]);
+			writer.print("ol:"+obligations[i]);
 			if (i != (obligations.length - 1)) {
 				writer.println(" ,");
 			} else {
