@@ -26,9 +26,22 @@ public class LicenseModelWizard extends Wizard implements INewWizard {
 		wizardPage = new LicenseModelWizardPage("Haloumi");
 		addPage(wizardPage);
 	}
-
+	
 	@Override
 	public boolean performFinish() {
+		System.out.println("License: "+wizardPage.getLicenseTitle());
+		System.out.println("Rights:");
+		for(String right:wizardPage.getLicenseRights()){
+			System.out.println(right);
+		}
+		
+		System.out.println("Obligations:");
+		for(String obligation:wizardPage.getLicenseObligations()){
+			System.out.println(obligation);
+		}
+		
+		System.out.println("LimitedLiability: "+wizardPage.hasLimitedLiability());
+		System.out.println("ProvidedWithoutWarranty: "+wizardPage.hasProvidedWithoutWarranty());
 		return true;
 	}
 
