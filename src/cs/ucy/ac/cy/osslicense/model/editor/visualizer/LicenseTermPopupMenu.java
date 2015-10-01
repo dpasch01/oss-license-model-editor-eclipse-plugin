@@ -127,6 +127,8 @@ public class LicenseTermPopupMenu<V, E> extends AbstractPopupGraphMousePlugin im
 							} else {
 								licenseModel.removeAdditionalCondition(vertex);
 							}
+
+							vv.repaint();
 						}
 					}
 				});
@@ -136,22 +138,27 @@ public class LicenseTermPopupMenu<V, E> extends AbstractPopupGraphMousePlugin im
 				}
 			} else {
 
-				LicenseTermMenu rightTerms = new LicenseTermMenu("Add right",
-						(ArrayList<java.lang.String>) this.licenseModel.getRights());
-				LicenseTermMenu obligationTerms = new LicenseTermMenu("Add obligation",
-						(ArrayList<java.lang.String>) this.licenseModel.getObligations());
-				LicenseTermMenu additionalConditionTerm = new LicenseTermMenu("Add additional condition",
-						(ArrayList<java.lang.String>) this.licenseModel.getAdditionalConditions());
+				LicenseTermMenu rightTerms = new LicenseTermMenu("Insert right",
+						(ArrayList<java.lang.String>) this.allRights);
+				LicenseTermMenu obligationTerms = new LicenseTermMenu("Insert obligation",
+						(ArrayList<java.lang.String>) this.allObligations);
+				LicenseTermMenu additionalConditionTerm = new LicenseTermMenu("Insert additional condition",
+						(ArrayList<java.lang.String>) this.allAdditionalConditions);
 
 				for (JMenuItem menuItem : rightTerms.getLicenseTermItems()) {
 					menuItem.addActionListener(new ActionListener() {
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							graph.addVertex((String) menuItem.getText());
-							graph.addEdge(new Edge("hasRight"), (String) licenseModel.getLicenseIdentifier(),
-									(String) menuItem.getText());
-							licenseModel.addRight(menuItem.getText());
+							if (licenseModel.getRights().contains(menuItem.getText())) {
+								JOptionPane.showMessageDialog(vv, menuItem.getText() + " already exists.");
+							} else {
+								graph.addVertex((String) menuItem.getText());
+								graph.addEdge(new Edge("hasRight"), (String) licenseModel.getLicenseIdentifier(),
+										(String) menuItem.getText());
+								licenseModel.addRight(menuItem.getText());
+								vv.repaint();
+							}
 						}
 					});
 				}
@@ -165,10 +172,15 @@ public class LicenseTermPopupMenu<V, E> extends AbstractPopupGraphMousePlugin im
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							graph.addVertex((String) menuItem.getText());
-							graph.addEdge(new Edge("hasObligation"), (String) licenseModel.getLicenseIdentifier(),
-									(String) menuItem.getText());
-							licenseModel.addObligation(menuItem.getText());
+							if (licenseModel.getRights().contains(menuItem.getText())) {
+								JOptionPane.showMessageDialog(vv, menuItem.getText() + " already exists.");
+							} else {
+								graph.addVertex((String) menuItem.getText());
+								graph.addEdge(new Edge("hasObligation"), (String) licenseModel.getLicenseIdentifier(),
+										(String) menuItem.getText());
+								licenseModel.addObligation(menuItem.getText());
+								vv.repaint();
+							}
 						}
 					});
 				}
@@ -182,10 +194,15 @@ public class LicenseTermPopupMenu<V, E> extends AbstractPopupGraphMousePlugin im
 
 						@Override
 						public void actionPerformed(ActionEvent e) {
-							graph.addVertex((String) menuItem.getText());
-							graph.addEdge(new Edge("hasAdditionalCondition"),
-									(String) licenseModel.getLicenseIdentifier(), (String) menuItem.getText());
-							licenseModel.addAdditionalCondition(menuItem.getText());
+							if (licenseModel.getRights().contains(menuItem.getText())) {
+								JOptionPane.showMessageDialog(vv, menuItem.getText() + " already exists.");
+							} else {
+								graph.addVertex((String) menuItem.getText());
+								graph.addEdge(new Edge("hasAdditionalCondition"),
+										(String) licenseModel.getLicenseIdentifier(), (String) menuItem.getText());
+								licenseModel.addAdditionalCondition(menuItem.getText());
+								vv.repaint();
+							}
 						}
 					});
 				}

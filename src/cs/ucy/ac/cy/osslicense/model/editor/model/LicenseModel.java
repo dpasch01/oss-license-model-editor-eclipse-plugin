@@ -8,6 +8,7 @@ public class LicenseModel {
 	private List<String> rights;
 	private List<String> obligations;
 	private List<String> additionalConditions;
+	private ModelChangeListener changeListener;
 
 	public LicenseModel(String identifier) {
 		this.setRights(new ArrayList<String>());
@@ -16,28 +17,43 @@ public class LicenseModel {
 		this.setLicenseIdentifier(identifier);
 	}
 
-	public void removeRight(String right) {
+	private synchronized void fireChangeEvent() {
+		ModelChangeEvent changeEvent = new ModelChangeEvent(this);
+		this.changeListener.modelChanged(changeEvent);
+	}
+
+	public synchronized void addModelChangeListener(ModelChangeListener listener) {
+		this.setChangeListener(listener);
+	}
+
+	public synchronized void removeRight(String right) {
 		this.rights.remove(right);
+		fireChangeEvent();
 	}
 
-	public void removeObligation(String obligation) {
-		this.rights.remove(obligation);
+	public synchronized void removeObligation(String obligation) {
+		this.obligations.remove(obligation);
+		fireChangeEvent();
 	}
 
-	public void removeAdditionalCondition(String additionalCondition) {
-		this.rights.remove(additionalCondition);
+	public synchronized void removeAdditionalCondition(String additionalCondition) {
+		this.additionalConditions.remove(additionalCondition);
+		fireChangeEvent();
 	}
 
-	public void addRight(String right) {
+	public synchronized void addRight(String right) {
 		this.rights.add(right);
+		fireChangeEvent();
 	}
 
-	public void addObligation(String obligation) {
-		this.rights.add(obligation);
+	public synchronized void addObligation(String obligation) {
+		this.obligations.add(obligation);
+		fireChangeEvent();
 	}
 
-	public void addAdditionalCondition(String additionalCondition) {
-		this.rights.add(additionalCondition);
+	public synchronized void addAdditionalCondition(String additionalCondition) {
+		this.additionalConditions.add(additionalCondition);
+		fireChangeEvent();
 	}
 
 	public List<String> getAdditionalConditions() {
@@ -70,6 +86,14 @@ public class LicenseModel {
 
 	public void setLicenseIdentifier(String licenseIdentifier) {
 		this.licenseIdentifier = licenseIdentifier;
+	}
+
+	public ModelChangeListener getChangeListener() {
+		return changeListener;
+	}
+
+	public void setChangeListener(ModelChangeListener changeListener) {
+		this.changeListener = changeListener;
 	}
 
 }

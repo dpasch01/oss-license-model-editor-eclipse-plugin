@@ -20,7 +20,9 @@ import cs.ucy.ac.cy.osslicense.model.editor.extractor.LicenseExtractor;
 import cs.ucy.ac.cy.osslicense.model.editor.form.FormEditor;
 import cs.ucy.ac.cy.osslicense.model.editor.licensefile.LicenseFileGenerator;
 import cs.ucy.ac.cy.osslicense.model.editor.model.LicenseModel;
+import cs.ucy.ac.cy.osslicense.model.editor.visualizer.Edge;
 import cs.ucy.ac.cy.osslicense.model.editor.visualizer.LicenseVisualizer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 public class LicenseModelEditor extends MultiPageEditorPart {
 
@@ -74,7 +76,9 @@ public class LicenseModelEditor extends MultiPageEditorPart {
 		lModel.setAdditionalConditions(lExtractor.extractAdditionalConditions());
 		LicenseVisualizer lVizualizer = new LicenseVisualizer(lModel);
 
-		frame.add(lVizualizer.generateGraphView());
+		VisualizationViewer<String, Edge> vv = lVizualizer.generateGraphView();
+
+		frame.add(vv);
 		frame.pack();
 		frame.setVisible(true);
 

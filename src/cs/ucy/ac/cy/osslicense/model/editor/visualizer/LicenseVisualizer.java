@@ -3,12 +3,12 @@ package cs.ucy.ac.cy.osslicense.model.editor.visualizer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Paint;
-
 import javax.swing.JFrame;
-
 import org.apache.commons.collections15.Transformer;
 
 import cs.ucy.ac.cy.osslicense.model.editor.model.LicenseModel;
+import cs.ucy.ac.cy.osslicense.model.editor.model.ModelChangeEvent;
+import cs.ucy.ac.cy.osslicense.model.editor.model.ModelChangeListener;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -71,16 +71,26 @@ public class LicenseVisualizer {
 
 		AbstractModalGraphMouse gm = new DefaultModalGraphMouse<String, Edge>();
 		vv.setGraphMouse(gm);
-		gm.add(new LicenseTermPopupMenu<>(this.licenseModel));
+
+		this.licenseModel.addModelChangeListener(new ModelChangeListener() {
+
+			@Override
+			public void modelChanged(ModelChangeEvent event) {
+				licenseModel = ((LicenseModel) event.getSource());
+				System.out.println(((LicenseModel) event.getSource()).getAdditionalConditions());
+			}
+		});
+
+		LicenseTermPopupMenu<String, Edge> popupMenu = new LicenseTermPopupMenu<>(licenseModel);
+		gm.add(popupMenu);
 
 		JFrame frame = new JFrame("Interactive Graph View 1");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(vv);
+
 		frame.pack();
 		frame.setVisible(true);
 
-		// vv.addGraphMouseListener(new LicenseTermMouseListener<String,
-		// String>());
 	}
 
 	public VisualizationViewer<String, Edge> generateGraphView() {
@@ -108,7 +118,18 @@ public class LicenseVisualizer {
 
 		AbstractModalGraphMouse gm = new DefaultModalGraphMouse<String, Edge>();
 		vv.setGraphMouse(gm);
-		gm.add(new LicenseTermPopupMenu<>(this.licenseModel));
+
+		this.licenseModel.addModelChangeListener(new ModelChangeListener() {
+
+			@Override
+			public void modelChanged(ModelChangeEvent event) {
+				licenseModel = ((LicenseModel) event.getSource());
+				System.out.println(((LicenseModel) event.getSource()).getAdditionalConditions());
+			}
+		});
+
+		LicenseTermPopupMenu<String, Edge> popupMenu = new LicenseTermPopupMenu<>(licenseModel);
+		gm.add(popupMenu);
 
 		return vv;
 	}
