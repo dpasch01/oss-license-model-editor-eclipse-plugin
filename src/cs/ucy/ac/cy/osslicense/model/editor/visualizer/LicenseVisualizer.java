@@ -7,8 +7,6 @@ import javax.swing.JFrame;
 import org.apache.commons.collections15.Transformer;
 
 import cs.ucy.ac.cy.osslicense.model.editor.model.LicenseModel;
-import cs.ucy.ac.cy.osslicense.model.editor.model.ModelChangeEvent;
-import cs.ucy.ac.cy.osslicense.model.editor.model.ModelChangeListener;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -22,6 +20,7 @@ public class LicenseVisualizer {
 
 	private LicenseModel licenseModel;
 	private Graph<String, Edge> licenseGraph;
+	private boolean isDirty;
 
 	public LicenseVisualizer(LicenseModel lModel) {
 		this.setLicenseModel(lModel);
@@ -72,15 +71,6 @@ public class LicenseVisualizer {
 		AbstractModalGraphMouse gm = new DefaultModalGraphMouse<String, Edge>();
 		vv.setGraphMouse(gm);
 
-		this.licenseModel.addModelChangeListener(new ModelChangeListener() {
-
-			@Override
-			public void modelChanged(ModelChangeEvent event) {
-				licenseModel = ((LicenseModel) event.getSource());
-				System.out.println(((LicenseModel) event.getSource()).getAdditionalConditions());
-			}
-		});
-
 		LicenseTermPopupMenu<String, Edge> popupMenu = new LicenseTermPopupMenu<>(licenseModel);
 		gm.add(popupMenu);
 
@@ -119,15 +109,6 @@ public class LicenseVisualizer {
 		AbstractModalGraphMouse gm = new DefaultModalGraphMouse<String, Edge>();
 		vv.setGraphMouse(gm);
 
-		this.licenseModel.addModelChangeListener(new ModelChangeListener() {
-
-			@Override
-			public void modelChanged(ModelChangeEvent event) {
-				licenseModel = ((LicenseModel) event.getSource());
-				System.out.println(((LicenseModel) event.getSource()).getAdditionalConditions());
-			}
-		});
-
 		LicenseTermPopupMenu<String, Edge> popupMenu = new LicenseTermPopupMenu<>(licenseModel);
 		gm.add(popupMenu);
 
@@ -148,5 +129,13 @@ public class LicenseVisualizer {
 
 	public void setLicenseGraph(Graph<String, Edge> licenseGraph) {
 		this.licenseGraph = licenseGraph;
+	}
+
+	public boolean isDirty() {
+		return isDirty;
+	}
+
+	public void setDirty(boolean isDirty) {
+		this.isDirty = isDirty;
 	}
 }

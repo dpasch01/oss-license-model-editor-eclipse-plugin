@@ -1,7 +1,8 @@
 package cs.ucy.ac.cy.osslicense.model.editor.form;
 
 import java.io.File;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
@@ -39,8 +40,70 @@ public class FormEditor extends EditorPart {
 	private List obligationList;
 	private LicenseModel licenseModel;
 
+	private Collection<String> allObligations;
+	private Collection<String> allRights;
+	private Collection<String> allAdditionalConditions;
+
 	public FormEditor(LicenseModel licenseModel) {
 		this.setLicenseModel(licenseModel);
+		this.allObligations = new ArrayList<String>();
+		this.allRights = new ArrayList<String>();
+		this.allAdditionalConditions = new ArrayList<String>();
+
+		initializeRights();
+		initializeObligations();
+		initializeAdditionalConditions();
+	}
+
+	private void initializeRights() {
+		this.allRights.clear();
+		this.allRights.add("MayAddDifferentLicenseTermsToYourModifications");
+		this.allRights.add("MayAddYourOwnChoiceOfLicenseIfCodeWasntUnderThisLicense");
+		this.allRights.add("MayAddYourOwnCopyrightStatementToYourModifications");
+		this.allRights.add("MayCombinedWithFilesUnderOpenOrPropiertaryLicenses");
+		this.allRights.add("MayDistributeDerivativeWorksInObjectForm");
+		this.allRights.add("MayDistributeDerivativeWorksInSourceForm");
+		this.allRights.add("MayDistributeOriginalWorkInObjectForm");
+		this.allRights.add("MayDistributeOriginalWorkInSourceForm");
+		this.allRights.add("MayGrantRightsToUseAndMakeAvailableOriginalAndEntireWorkModifications");
+		this.allRights.add("MayGrantPatentsRightsFromTheContributorToReceipt");
+		this.allRights.add("MayMakeModifications");
+		this.allRights.add("MayMakeDerivativeWorks");
+		this.allRights.add("MaySublicense");
+		this.allRights.add("MayPubliclyDisplay");
+		this.allRights.add("MayPubliclyPerfom");
+		this.allRights.add("MayUseInHouse");
+		this.allRights.add("MayCopy");
+		this.allRights.add("MayAcceptWarrantyOrAdditionalLiability");
+		this.allRights.add("MayCompinedLibraries");
+	}
+
+	private void initializeObligations() {
+		this.allObligations.clear();
+		this.allObligations.add("MustPublishSourceCodeWhenDistributedViaNetwork");
+		this.allObligations.add("MustDistibuteCodeUnderThisLicense");
+		this.allObligations.add("MustPublishAsLibraryTheModifiedVersion");
+		this.allObligations.add("MustLicenseDerivativesWorksUnderCombatibleLicense");
+		this.allObligations.add("MustMarkModifications");
+		this.allObligations.add("MustNotMisrepresentTheOriginalAuthorOfSoftware");
+		this.allObligations.add("MustNotMisrepresentNewVersionAsOriginalSoftware");
+		this.allObligations.add("MustOfferSourceCode");
+		this.allObligations.add("MustRetainCopyrightNotice");
+		this.allObligations.add("MustRetainLicenseNotice");
+		this.allObligations.add("MustRetainInSourceCodeOfDerivativeWorkAllTradeMarksPatentCopyrightsOfOriginalWork");
+		this.allObligations.add("MustModifeidVersionBeUnderThisLicenseOrGPL");
+		this.allObligations.add("NotPermissionToUseTradeMarks");
+		this.allObligations.add("NotSublicense");
+		this.allObligations.add("MustDistributeCopyOfNoticeText");
+		this.allObligations.add("MustDistributeCopiesOfOriginalWorkOrInstructionHowToGetThem");
+		this.allObligations.add("MustRenameModifiedVersion");
+		this.allObligations.add("MustRetainNoticeInSourceDistribution");
+		this.allObligations.add("MustProvideInformationHowToGetSourceCode");
+	}
+
+	private void initializeAdditionalConditions() {
+		this.allAdditionalConditions.add("LimitedLiability");
+		this.allAdditionalConditions.add("ProvideWithoutWarranty");
 	}
 
 	public FormEditorInput getInput() {
@@ -298,35 +361,45 @@ public class FormEditor extends EditorPart {
 
 	}
 
-	public void setupFormFields() {
+	public synchronized void setupFormFields() {
+		initializeRights();
+		initializeObligations();
 
 		licenseTitle.setText(licenseModel.getLicenseIdentifier());
 
+		licenseRights.removeAll();
+		rightList.removeAll();
+
+		allRights.removeAll(licenseModel.getRights());
+		for (String right : allRights) {
+			rightList.add(right);
+		}
 		for (String right : licenseModel.getRights()) {
-			try {
-				rightList.remove(right);
-			} catch (IllegalArgumentException ile) {
-				break;
-			}
 			licenseRights.add(right);
 		}
 
+		licenseObligations.removeAll();
+		obligationList.removeAll();
+
+		allObligations.removeAll(licenseModel.getObligations());
+		for (String obligation : allObligations) {
+			obligationList.add(obligation);
+		}
 		for (String obligation : licenseModel.getObligations()) {
-			try {
-				obligationList.remove(obligation);
-			} catch (IllegalArgumentException ile) {
-				break;
-			}
 			licenseObligations.add(obligation);
 		}
 
 		for (String condition : licenseModel.getAdditionalConditions()) {
 			if (condition.equals("LimitedLiability")) {
 				hasLimitedLiability.setSelection(true);
+			}else{
+				hasLimitedLiability.setSelection(false);
 			}
 
 			if (condition.equals("ProvideWithoutWarranty")) {
 				hasProvidedWithoutWarranty.setSelection(true);
+			}else{
+				hasProvidedWithoutWarranty.setSelection(false);
 			}
 		}
 	}
@@ -372,8 +445,12 @@ public class FormEditor extends EditorPart {
 		this.licenseModel = licenseModel;
 	}
 
-	public void update(LicenseModel lModel) {
+	public synchronized void update(LicenseModel lModel) {
 		this.licenseModel = lModel;
 		setupFormFields();
+	}
+
+	public void setDirty(boolean b) {
+		this.isDirty = b;
 	}
 }
