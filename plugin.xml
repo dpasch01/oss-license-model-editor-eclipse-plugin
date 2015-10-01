@@ -6,7 +6,7 @@
       <editor
             class="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
             default="true"
-            extensions="olm"
+            extensions="ttl"
             id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
             name="OSS License Model Multi Editor">
       </editor>

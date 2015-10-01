@@ -1,57 +1,113 @@
-package cs.ucy.ac.cy.osslicense.model.editor.wizard;
+package cs.ucy.ac.cy.osslicense.model.editor.form;
 
-import org.eclipse.jface.wizard.WizardPage;
+import java.io.File;
+
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.eclipse.swt.custom.CCombo;
 
-public class LicenseModelWizardPage extends WizardPage {
+import cs.ucy.ac.cy.osslicense.model.editor.extractor.LicenseExtractor;
+import cs.ucy.ac.cy.osslicense.model.editor.model.LicenseModel;
+
+public class FormEditor extends EditorPart {
+
+	private boolean isDirty = false;
+
 	private Composite container;
 	private List licenseRights;
 	private List licenseObligations;
 	private Button hasProvidedWithoutWarranty;
 	private Button hasLimitedLiability;
 	private CCombo licenseTitle;
-	private WizardPage currentPage;
+	private List rightList;
+	private List obligationList;
+	private LicenseModel licenseModel;
 
-	protected LicenseModelWizardPage(String pageName) {
-		super(pageName);
-		setPageComplete(false);
-		setTitle("License Model Wizard: ");
-		setDescription("New License Model");
-		currentPage = this;
+	public FormEditor(LicenseModel licenseModel) {
+		this.setLicenseModel(licenseModel);
 	}
 
-	public String getLicenseTitle() {
-		return licenseTitle.getText();
-	}
-
-	public String[] getLicenseRights() {
-		return licenseRights.getItems();
-	}
-
-	public String[] getLicenseObligations() {
-		return licenseObligations.getItems();
-	}
-
-	public boolean hasLimitedLiability() {
-		return hasLimitedLiability.getSelection();
-	}
-
-	public boolean hasProvidedWithoutWarranty() {
-		return hasProvidedWithoutWarranty.getSelection();
+	public FormEditorInput getInput() {
+		return (FormEditorInput) this.getEditorInput();
 	}
 
 	@Override
-	public void createControl(Composite parent) {
+	public String getPartName() {
+		return getInput().getName();
+	}
+
+	private IPath getPathFromEditorInput(IEditorInput input) {
+		IPath path = null;
+		if (input instanceof FileStoreEditorInput) {
+			FileStoreEditorInput fileStoreEditorInput = (FileStoreEditorInput) input;
+			path = new Path(fileStoreEditorInput.getURI().getPath());
+		} else if (input instanceof FileEditorInput) {
+			FileEditorInput newInput = (FileEditorInput) input;
+			path = newInput.getFile().getLocation();
+		}
+		return path;
+	}
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		setDirtyFlag(false);
+	}
+
+	@Override
+	public void doSaveAs() {
+
+	}
+
+	@Override
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+		IPath path = this.getPathFromEditorInput(input);
+		if (path == null) {
+			throw new PartInitException("Invalid Editor Input.");
+		}
+
+		File licenseModelFile = path.toFile();
+		LicenseExtractor licenseExtractor = new LicenseExtractor(licenseModelFile.getAbsolutePath());
+
+		LicenseModel licenseModel = new LicenseModel(licenseExtractor.extractLicenseIdentifier());
+		licenseModel.setRights(licenseExtractor.extractRights());
+		licenseModel.setObligations(licenseExtractor.extractObligations());
+		licenseModel.setAdditionalConditions(licenseExtractor.extractAdditionalConditions());
+
+		FormEditorInput formEditorInput = new FormEditorInput("", licenseModel, licenseModelFile.getAbsoluteFile());
+		this.setInput(formEditorInput);
+		this.setSite(site);
+
+	}
+
+	@Override
+	public boolean isDirty() {
+		return this.isDirty;
+	}
+
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
 		container = new Composite(parent, SWT.NONE);
-		setControl(container);
 		container.setLayout(null);
 
 		Label lblRights = new Label(container, SWT.NONE);
@@ -59,7 +115,7 @@ public class LicenseModelWizardPage extends WizardPage {
 		lblRights.setBounds(5, 47, 249, 29);
 		lblRights.setText("Rights:");
 
-		List rightList = new List(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+		rightList = new List(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
 		rightList.setBounds(5, 82, 249, 146);
 		rightList.setTouchEnabled(true);
 		rightList.setItems(new String[] { "MayAddDifferentLicenseTermsToYourModifications",
@@ -84,6 +140,7 @@ public class LicenseModelWizardPage extends WizardPage {
 				for (int selectionIndex : rightList.getSelectionIndices()) {
 					licenseRights.add(rightList.getItem(selectionIndex));
 					rightList.remove(selectionIndex);
+					setDirtyFlag(true);
 				}
 			}
 		});
@@ -97,13 +154,14 @@ public class LicenseModelWizardPage extends WizardPage {
 				for (int selectionIndex : licenseRights.getSelectionIndices()) {
 					rightList.add(rightList.getItem(selectionIndex));
 					licenseRights.remove(selectionIndex);
+					setDirtyFlag(true);
 				}
 			}
 		});
 		removeRight.setBounds(290, 160, 110, 25);
 		removeRight.setText("<<");
 
-		List obligationList = new List(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+		obligationList = new List(container, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
 		obligationList.setItems(new String[] { "MustPublishSourceCodeWhenDistributedViaNetwork",
 				"MustDistibuteCodeUnderThisLicense", "MustPublishAsLibraryTheModifiedVersion",
 				"MustLicenseDerivativesWorksUnderCombatibleLicense", "MustMarkModifications",
@@ -134,6 +192,7 @@ public class LicenseModelWizardPage extends WizardPage {
 				for (int selectionIndex : licenseObligations.getSelectionIndices()) {
 					obligationList.add(licenseObligations.getItem(selectionIndex));
 					licenseObligations.remove(selectionIndex);
+					setDirtyFlag(true);
 				}
 			}
 		});
@@ -146,6 +205,7 @@ public class LicenseModelWizardPage extends WizardPage {
 				for (int selectionIndex : obligationList.getSelectionIndices()) {
 					licenseObligations.add(obligationList.getItem(selectionIndex));
 					obligationList.remove(selectionIndex);
+					setDirtyFlag(true);
 				}
 			}
 		});
@@ -158,12 +218,19 @@ public class LicenseModelWizardPage extends WizardPage {
 		hasLimitedLiability.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				setDirtyFlag(true);
 			}
 		});
 		hasLimitedLiability.setBounds(5, 445, 678, 16);
 		hasLimitedLiability.setText("LimitedLiability");
 
 		hasProvidedWithoutWarranty = new Button(container, SWT.CHECK);
+		hasProvidedWithoutWarranty.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				setDirtyFlag(true);
+			}
+		});
 		hasProvidedWithoutWarranty.setText("ProvideWithoutWarranty");
 		hasProvidedWithoutWarranty.setBounds(5, 467, 678, 16);
 
@@ -217,12 +284,96 @@ public class LicenseModelWizardPage extends WizardPage {
 		licenseTitle.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (licenseTitle.getSelectionIndex() >= 0) {
-					currentPage.setPageComplete(true);
-				}
+				setDirtyFlag(true);
 			}
 		});
 		licenseTitle.setText("Select a license");
 		licenseTitle.setBounds(66, 10, 617, 25);
+
+		setupFormFields();
+	}
+
+	@Override
+	public void setFocus() {
+
+	}
+
+	public void setupFormFields() {
+
+		licenseTitle.setText(licenseModel.getLicenseIdentifier());
+
+		for (String right : licenseModel.getRights()) {
+			try {
+				rightList.remove(right);
+			} catch (IllegalArgumentException ile) {
+				break;
+			}
+			licenseRights.add(right);
+		}
+
+		for (String obligation : licenseModel.getObligations()) {
+			try {
+				obligationList.remove(obligation);
+			} catch (IllegalArgumentException ile) {
+				break;
+			}
+			licenseObligations.add(obligation);
+		}
+
+		for (String condition : licenseModel.getAdditionalConditions()) {
+			if (condition.equals("LimitedLiability")) {
+				hasLimitedLiability.setSelection(true);
+			}
+
+			if (condition.equals("ProvideWithoutWarranty")) {
+				hasProvidedWithoutWarranty.setSelection(true);
+			}
+		}
+	}
+
+	private void setDirtyFlag(boolean isDirty) {
+		this.isDirty = isDirty;
+		firePropertyChange(IEditorPart.PROP_DIRTY);
+	}
+
+	public LicenseModel getLicenseModel() {
+		return licenseModel;
+	}
+
+	public String getLicenseIdentifierInput() {
+		return licenseTitle.getText();
+	}
+
+	public String[] getLicenseObligationsInput() {
+		String[] obligations = new String[licenseObligations.getItemCount()];
+		for (int i = 0; i < licenseObligations.getItemCount(); i++) {
+			obligations[i] = licenseObligations.getItem(i);
+		}
+		return obligations;
+	}
+
+	public String[] getLicenseRightsInput() {
+		String[] rights = new String[licenseRights.getItemCount()];
+		for (int i = 0; i < licenseRights.getItemCount(); i++) {
+			rights[i] = licenseRights.getItem(i);
+		}
+		return rights;
+	}
+
+	public boolean hasLimitedLiability() {
+		return hasLimitedLiability.getSelection();
+	}
+
+	public boolean hasProvidedWithoutWarranty() {
+		return hasProvidedWithoutWarranty.getSelection();
+	}
+
+	public void setLicenseModel(LicenseModel licenseModel) {
+		this.licenseModel = licenseModel;
+	}
+
+	public void update(LicenseModel lModel) {
+		this.licenseModel = lModel;
+		setupFormFields();
 	}
 }

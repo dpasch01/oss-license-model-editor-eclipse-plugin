@@ -6,14 +6,38 @@ import java.util.List;
 public class LicenseModel {
 	private String licenseIdentifier;
 	private List<String> rights;
-	private List<String> obligations; 
-	private List<String> additionalConditions; 
-	
-	public LicenseModel(String identifier){
+	private List<String> obligations;
+	private List<String> additionalConditions;
+
+	public LicenseModel(String identifier) {
 		this.setRights(new ArrayList<String>());
 		this.setObligations(new ArrayList<String>());
 		this.setAdditionalConditions(new ArrayList<String>());
 		this.setLicenseIdentifier(identifier);
+	}
+
+	public void removeRight(String right) {
+		this.rights.remove(right);
+	}
+
+	public void removeObligation(String obligation) {
+		this.rights.remove(obligation);
+	}
+
+	public void removeAdditionalCondition(String additionalCondition) {
+		this.rights.remove(additionalCondition);
+	}
+
+	public void addRight(String right) {
+		this.rights.add(right);
+	}
+
+	public void addObligation(String obligation) {
+		this.rights.add(obligation);
+	}
+
+	public void addAdditionalCondition(String additionalCondition) {
+		this.rights.add(additionalCondition);
 	}
 
 	public List<String> getAdditionalConditions() {
@@ -47,5 +71,5 @@ public class LicenseModel {
 	public void setLicenseIdentifier(String licenseIdentifier) {
 		this.licenseIdentifier = licenseIdentifier;
 	}
-	
+
 }
