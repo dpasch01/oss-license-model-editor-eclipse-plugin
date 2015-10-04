@@ -7,8 +7,9 @@
             class="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
             default="true"
             extensions="ttl"
+            icon="assets/Open-source-icon-16x16.jpg"
             id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelEditor"
-            name="OSS License Model Multi Editor">
+            name="License Model Editor">
       </editor>
    </extension>
    <extension
@@ -24,13 +25,14 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelCategory"
-            name="License Model Category">
+            name="License Model Editor">
       </category>
       <wizard
             category="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelCategory"
             class="cs.ucy.ac.cy.osslicense.model.editor.wizard.LicenseModelWizard"
+            icon="assets/Open-source-icon-16x16.jpg"
             id="cs.ucy.ac.cy.osslicense.model.editor.LicenseModelWizard"
-            name="License Model Wizard">
+            name="License Model ">
       </wizard>
    </extension>
 

@@ -14,7 +14,10 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.10.0",
  org.eclipse.ui.workbench,
  org.eclipse.core.filesystem;bundle-version="1.5.0",
- org.eclipse.jface
+ org.eclipse.jface,
+ org.eclipse.swt,
+ org.eclipse.text,
+ org.eclipse.equinox.registry
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: libs/appframework-1.0.3.jar,
@@ -50,4 +53,6 @@ Bundle-ClassPath: libs/appframework-1.0.3.jar,
  libs/jena/slf4j-log4j12-1.7.12.jar,
  libs/jena/xercesImpl-2.11.0.jar,
  libs/jena/xml-apis-1.4.01.jar,
- swing2swt.jar
+ swing2swt.jar,
+ libs/commons-io-2.4/commons-io-2.4.jar
+Import-Package: org.apache.poi.util

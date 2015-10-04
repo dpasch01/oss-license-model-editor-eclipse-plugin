@@ -21,6 +21,11 @@ public class LicenseVisualizer {
 	private LicenseModel licenseModel;
 	private Graph<String, Edge> licenseGraph;
 	private boolean isDirty;
+	private LicenseTermPopupMenu<String, Edge> popupMenu;
+
+	public LicenseTermPopupMenu<String, Edge> getPopupMenu() {
+		return this.popupMenu;
+	}
 
 	public LicenseVisualizer(LicenseModel lModel) {
 		this.setLicenseModel(lModel);
@@ -109,7 +114,7 @@ public class LicenseVisualizer {
 		AbstractModalGraphMouse gm = new DefaultModalGraphMouse<String, Edge>();
 		vv.setGraphMouse(gm);
 
-		LicenseTermPopupMenu<String, Edge> popupMenu = new LicenseTermPopupMenu<>(licenseModel);
+		popupMenu = new LicenseTermPopupMenu<>(licenseModel);
 		gm.add(popupMenu);
 
 		return vv;
@@ -137,5 +142,9 @@ public class LicenseVisualizer {
 
 	public void setDirty(boolean isDirty) {
 		this.isDirty = isDirty;
+	}
+
+	public void setPopupMenuModel(LicenseModel lModel) {
+		this.popupMenu.setLicenseModel(lModel);
 	}
 }

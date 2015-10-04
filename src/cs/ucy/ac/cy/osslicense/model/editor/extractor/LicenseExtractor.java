@@ -32,6 +32,36 @@ public class LicenseExtractor {
 		this.filename = filename;
 	}
 
+	public boolean isValid() {
+		ArrayList<String> errorList = new ArrayList<String>();
+
+		String queryString = Prolog.LICENSE_ONTOLOGY + Prolog.NL + Prolog.RDF_SYNTAX + Prolog.NL + Prolog.RDF_SCHEMA
+				+ Prolog.NL + "SELECT DISTINCT ?x,?y,?z WHERE {?x ?y ?z}";
+
+		Query query = QueryFactory.create(queryString);
+		QueryExecution qexec = QueryExecutionFactory.create(query, model);
+
+		try {
+			final ResultSet rs = qexec.execSelect();
+			for (; rs.hasNext();) {
+				final QuerySolution rb = rs.nextSolution();
+				final Resource X = rb.getResource("x");
+				errorList.add(X.getLocalName());
+				System.out.println("X = " + X.getLocalName());
+				final Resource Y = rb.getResource("y");
+				errorList.add(Y.getLocalName());
+				System.out.println("Y = " + Y.getLocalName());
+				final Resource Z = rb.getResource("z");
+				errorList.add(Z.getLocalName());
+				System.out.println("Z = " + Z.getLocalName());
+			}
+		} finally {
+			qexec.close();
+		}
+
+		return false;
+	}
+
 	public List<String> extractRights() {
 		ArrayList<String> rights = new ArrayList<>();
 		String queryString = Prolog.LICENSE_ONTOLOGY + Prolog.NL + Prolog.RDF_SYNTAX + Prolog.NL + Prolog.RDF_SCHEMA

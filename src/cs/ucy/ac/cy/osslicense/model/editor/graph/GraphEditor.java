@@ -30,6 +30,7 @@ public class GraphEditor extends EditorPart {
 	private LicenseModel licenseModel;
 	private LicenseVisualizer licenseVisualizer;
 	private boolean isDirty = false;
+	private VisualizationViewer<String, Edge> vv;
 
 	public GraphEditor(LicenseModel licenseModel) {
 		this.setLicenseModel(licenseModel);
@@ -121,7 +122,7 @@ public class GraphEditor extends EditorPart {
 		});
 
 		licenseVisualizer = new LicenseVisualizer(this.licenseModel);
-		VisualizationViewer<String, Edge> vv = licenseVisualizer.generateGraphView();
+		vv = licenseVisualizer.generateGraphView();
 
 		frame.add(vv);
 		frame.pack();
@@ -159,15 +160,8 @@ public class GraphEditor extends EditorPart {
 	}
 
 	public void update(LicenseModel lModel) {
-		System.out.println("Update: "+lModel.getAdditionalConditions());
 		this.licenseModel = lModel;
-		
-		container = new Composite(getContainer(), SWT.EMBEDDED);
-		FillLayout layout = new FillLayout();
-		container.setLayout(layout);
-		java.awt.Frame frame = SWT_AWT.new_Frame(container);
-		javax.swing.JPanel panel = new javax.swing.JPanel();
-		frame.add(panel);
+		this.licenseVisualizer.setPopupMenuModel(lModel);
 
 		this.licenseModel.addModelChangeListener(new ModelChangeListener() {
 
@@ -179,12 +173,6 @@ public class GraphEditor extends EditorPart {
 
 		});
 
-		licenseVisualizer.setLicenseModel(this.licenseModel);
-		VisualizationViewer<String, Edge> vv = licenseVisualizer.generateGraphView();
-
-		frame.add(vv);
-		frame.pack();
-		frame.setVisible(true);
-
+		vv.repaint();
 	}
 }
